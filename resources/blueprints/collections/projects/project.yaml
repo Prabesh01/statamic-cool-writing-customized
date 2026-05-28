@@ -1,0 +1,74 @@
+sections:
+  main:
+    display: Project Details
+    fields:
+      -
+        handle: title
+        field:
+          type: text
+          display: Project Name
+          required: true
+      -
+        handle: excerpt
+        field:
+          type: textarea
+          display: Excerpt
+      -
+        handle: featured_image
+        field:
+          type: assets
+          display: Image
+          container: assets
+          max_files: 1
+          mode: grid
+      -
+        handle: content
+        field:
+          type: bard
+          display: Content
+          container: assets
+      -
+        handle: github_link
+        field:
+          type: text
+          display: GitHub Repository URL
+          input_type: url
+          placeholder: 'https://github.com/username/repo'
+      -
+        handle: live_link
+        field:
+          type: text
+          display: Live Demo URL
+          input_type: url
+          placeholder: 'https://myproject.com'
+      -
+        handle: related_article
+        field:
+          type: entries
+          collections:
+            - articles
+          max_items: 1
+          display: Technical Deep Dive Article
+          mode: default
+  sidebar:
+    display: Sidebar
+    fields:
+      -
+        handle: date
+        field:
+          type: date
+          display: Date
+      -
+        handle: project_tags
+        field:
+          type: list
+          display: Project Tags
+      -
+        handle: project_categories
+        field:
+          type: terms
+          taxonomies:
+            - project_categories
+          display: Project Category
+          mode: select
+          max_items: 1
