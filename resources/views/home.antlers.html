@@ -1,28 +1,426 @@
-<div class="max-w-5xl mx-auto relative py-16 lg:pt-40 lg:pb-32">
-    <article class="content">
-        <p class="font-medium text-lg text-teal">{{ subtitle }}</p>
-        <h1>{{ content }}</h1>
-    </article>
-</div>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400&display=swap');
 
-<div class="max-w-2xl mx-auto mb-32">
-    {{ collection:articles limit="5" as="articles" }}
-        {{ if no_results }}
-            <h2 class="text-3xl italic tracking-tight">Feel the rhythm! Feel the rhyme! Get on up, it's writing time! Cool writings!</h2>
+  .pj-wrap {
+    --ink: #1a1a18;
+    --ink-2: #5a5a55;
+    --ink-3: #9a9a94;
+    --surface: #ffffff;
+    --surface-2: #f6f5f1;
+    --border: rgba(0,0,0,0.08);
+    --accent: #0f6e56;
+    --accent-bg: #e1f5ee;
+    --accent-text: #085041;
+    --radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .pj-search-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .pj-search-row svg {
+    flex-shrink: 0;
+    color: var(--ink-3);
+  }
+
+  .pj-search-row input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9375rem;
+    color: var(--ink);
+    width: 100%;
+  }
+
+  .pj-search-row input::placeholder { color: var(--ink-3); }
+
+  .pj-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .pill-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 100px;
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: var(--surface-2);
+    color: var(--ink-2);
+    border-color: var(--border);
+    letter-spacing: 0.01em;
+  }
+
+  .pill-btn:hover { background: #e8e7e1; color: var(--ink); }
+
+  .pill-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .pj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.75rem;
+  }
+
+  .pj-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .pj-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+    transform: translateY(-2px);
+  }
+
+  .pj-card-img {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+
+  .pj-card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .pj-card-date {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: rgba(15,15,13,0.62);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.03em;
+  }
+
+  .pj-no-img {
+    aspect-ratio: 16 / 9;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .pj-no-img-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--ink-3);
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    letter-spacing: 0.03em;
+  }
+
+  .pj-no-img-icon {
+    color: #d0cfc8;
+  }
+
+  .pj-card-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .pj-card-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0 0 0.6rem;
+    letter-spacing: -0.01em;
+  }
+
+  .pj-card-body h2 a {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .pj-card-body h2 a:hover { color: var(--accent); }
+
+  .pj-card-body p {
+    font-size: 0.875rem;
+    color: var(--ink-2);
+    line-height: 1.65;
+    margin: 0 0 1rem;
+    flex-grow: 1;
+  }
+
+  .pj-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  .pj-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.2rem 0.55rem;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--ink-2);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .pj-tag:hover {
+    background: var(--accent-bg);
+    color: var(--accent-text);
+    border-color: #9FE1CB;
+  }
+
+  .pj-links {
+    display: flex;
+    gap: 1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--border);
+    margin-top: auto;
+  }
+
+  .pj-links a {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .pj-links a:hover { color: var(--accent); }
+
+  .pj-empty {
+    display: none;
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--surface-2);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius);
+    color: var(--ink-3);
+    font-size: 0.9375rem;
+  }
+
+  .pj-empty svg { display: block; margin: 0 auto 0.75rem; opacity: 0.35; }
+
+  .pj-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.03em;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .pj-wrap {
+      --ink: #f0efe8;
+      --ink-2: #a8a79f;
+      --ink-3: #686862;
+      --surface: #1e1e1b;
+      --surface-2: #272724;
+      --border: rgba(255,255,255,0.08);
+      --accent: #1D9E75;
+      --accent-bg: #0a3328;
+      --accent-text: #5DCAA5;
+    }
+  }
+</style>
+
+<div class="pj-wrap">
+
+  <div class="pj-search-row">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input type="text" id="pj-search" placeholder="Search by title, tag, or description…" autocomplete="off" />
+  </div>
+
+  <p class="pj-count" id="pj-count" aria-live="polite"></p>
+
+  <div class="pj-pills" id="pj-pills" role="group" aria-label="Filter by category">
+    <button class="pill-btn active" data-filter="all">All</button>
+    {{ taxonomy:project_categories as="categories" }}
+    {{ categories }}
+      <button class="pill-btn" data-filter="{{ slug }}">{{ title }}</button>
+    {{ /categories }}
+    {{ /taxonomy:project_categories }}
+  </div>
+
+  <div class="pj-grid" id="pj-grid">
+    {{ collection:projects as="projects" sort="date:desc" }}
+    {{ projects }}
+<div class="pj-card"
+     data-cats="{{ project_categories }}{{ slug }}{{ unless last }},{{ /unless }}{{ /project_categories }}"
+     data-tags="{{ project_tags }}{{ value }}{{ unless last }},{{ /unless }}{{ /project_tags }}"
+     data-search="{{ title | lower }} {{ excerpt | lower }} {{ project_tags }}{{ value | lower }} {{ /project_tags }}">
+        <a href="{{ url }}">
+        {{ if featured_image }}
+          <div class="pj-card-img">
+            {{ featured_image }}
+              <img src="{{ url }}" alt="{{ title }}" loading="lazy" />
+            {{ /featured_image }}
+            {{ if date }}<span class="pj-card-date">{{ date format="F Y" }}</span>{{ /if }}
+          </div>
+        {{ else }}
+          <div class="pj-no-img">
+            {{ if date }}<span class="pj-no-img-date">{{ date format="F j, Y" }}</span>{{ /if }}
+            <svg class="pj-no-img-icon" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          </div>
         {{ /if }}
 
-        {{ articles }}
-            <div class="mb-16">
-                <h2 class="mb-4">
-                    <a href="{{ url }}" class="text-2xl hover:text-teal tracking-tight leading-tight font-bold">
-                        {{ title | widont }}
-                    </a>
-                </h2>
-                <p class="text-gray-600">
-                    <span class="text-gray-800 text-sm uppercase tracking-widest font-medium">{{ date }}</span> &mdash;
-                    {{ excerpt | widont ?? content | strip_tags | safe_truncate(150, '...') }}
-                </p>
+        <div class="pj-card-body">
+          <h2>
+            {{ title }}</a>
+          </h2>
+          {{ if excerpt }}
+            <p>{{ excerpt }}</p>
+          {{ else }}
+            <p style="opacity:0.45; font-style:italic;">No description provided.</p>
+          {{ /if }}
+
+          {{ if project_tags }}
+            <div class="pj-tags">
+              {{ project_tags }}
+                <span class="pj-tag" data-tag="{{ value | lower }}" role="button" tabindex="0">{{ value }}</span>
+              {{ /project_tags }}
             </div>
-        {{ /articles }}
-    {{ /collection:articles }}
+          {{ /if }}
+
+          {{ if github_link or live_link }}
+            <div class="pj-links">
+              {{ if github_link }}
+                <a href="{{ github_link }}" target="_blank" rel="noopener">
+                  <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.54 2.87 8.39 6.84 9.75.5.09.68-.22.68-.49v-1.71c-2.78.62-3.37-1.37-3.37-1.37-.45-1.17-1.1-1.48-1.1-1.48-.9-.63.07-.62.07-.62 1 .07 1.52 1.05 1.52 1.05.88 1.55 2.31 1.1 2.87.84.09-.66.35-1.1.63-1.35-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.38 9.38 0 0 1 12 7.4c.85 0 1.7.12 2.5.34 1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9v2.81c0 .27.18.59.69.49C19.14 20.64 22 16.79 22 12.26 22 6.58 17.52 2 12 2z"/></svg>
+                  GitHub
+                </a>
+              {{ /if }}
+              {{ if live_link }}
+                <a href="{{ live_link }}" target="_blank" rel="noopener">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  Live
+                </a>
+              {{ /if }}
+    {{ if related_article }}
+        {{ related_article }}
+            <a href="{{ url }}">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                Deep Dive
+            </a>
+        {{ /related_article }}
+    {{ /if }}
+            </div>
+          {{ /if }}
+        </div>
+      </div>
+    {{ /projects }}
+    {{ /collection:projects }}
+
+    <div class="pj-empty" id="pj-empty" aria-live="polite">
+      <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      No projects.
+    </div>
+  </div>
 </div>
+
+<script>
+(function () {
+  const grid   = document.getElementById('pj-grid');
+  const search = document.getElementById('pj-search');
+  const pills  = document.getElementById('pj-pills');
+  const empty  = document.getElementById('pj-empty');
+  const count  = document.getElementById('pj-count');
+  const cards  = Array.from(grid.querySelectorAll('.pj-card'));
+  let activeFilter = 'all';
+  let searchVal    = '';
+
+  function update() {
+    let visible = 0;
+    cards.forEach(function(card) {
+      const cats   = (card.dataset.cats  || '').split(',').map(function(s){ return s.trim(); });
+      const tags   = (card.dataset.tags  || '').split(',').map(function(s){ return s.trim(); });
+      const haystack = card.dataset.search || '';
+      const catMatch = activeFilter === 'all' || cats.includes(activeFilter) || tags.includes(activeFilter);
+      const termMatch = searchVal === '' || haystack.includes(searchVal);
+      const show = catMatch && termMatch;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    empty.style.display = visible === 0 ? 'block' : 'none';
+    count.textContent = visible + ' project' + (visible !== 1 ? 's' : '');
+  }
+
+  pills.addEventListener('click', function(e) {
+    const btn = e.target.closest('.pill-btn');
+    if (!btn) return;
+    pills.querySelectorAll('.pill-btn').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    update();
+  });
+
+  search.addEventListener('input', function() {
+    searchVal = search.value.trim().toLowerCase();
+    update();
+  });
+
+  grid.addEventListener('click', function(e) {
+    const tag = e.target.closest('.pj-tag');
+    if (!tag) return;
+    const val = tag.dataset.tag;
+    searchVal = '';
+    search.value = '';
+    pills.querySelectorAll('.pill-btn').forEach(function(b){ b.classList.remove('active'); });
+    const match = Array.from(pills.querySelectorAll('.pill-btn')).find(function(b){ return b.dataset.filter === val; });
+    if (match) { match.classList.add('active'); activeFilter = val; }
+    else { pills.querySelector('[data-filter="all"]').classList.add('active'); activeFilter = 'all'; }
+    update();
+  });
+
+  grid.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const tag = e.target.closest('.pj-tag');
+      if (tag) { e.preventDefault(); tag.click(); }
+    }
+  });
+
+  update();
+})();
+</script>
