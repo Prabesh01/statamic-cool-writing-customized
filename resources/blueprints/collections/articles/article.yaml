@@ -25,6 +25,16 @@ sections:
           display: Excerpt
           character_limit: 160
       -
+        handle: related_article
+        field:
+          type: entries
+          collections:
+            - articles
+          max_items: 1
+          display: Display as suggested article
+          mode: default
+
+      -
         handle: author
         field:
           type: users
