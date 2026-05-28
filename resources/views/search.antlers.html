@@ -1,0 +1,49 @@
+<div class="max-w-5xl mx-auto relative mt-16">
+    <article class="py-32 max-w-2xl mx-auto">
+        <header class="content mb-16">
+            <h1>Search Results</h1>
+            Showing results for: <strong>"{{ get:q }}"</strong>
+        </header>
+
+
+    <div class="search-results space-y-6">
+        {{ search:results as="results" paginate="10" }}
+
+            {{ if no_results }}
+                     <h2 class="text-3xl italic tracking-tight">No results.</h2>
+            {{ /if }}
+
+            {{ results }}
+            <div class="mb-16">
+                <h2 class="mb-4">
+                    <a href="{{ url }}" class="text-2xl hover:text-teal tracking-tight leading-tight font-bold">
+                        {{ title | widont }}
+                    </a>
+                </h2>
+                <p class="text-gray-600">
+                    <span class="text-gray-800 text-sm uppercase tracking-widest font-medium">{{ date }}</span> &mdash;
+                    {{ excerpt | widont ?? content | strip_tags | safe_truncate(150, '...') }}
+                </p>
+            </div>
+            {{ /results }}
+        {{ paginate }}
+        {{ if prev_page || next_page }}
+        <div class="flex justify-between text-xl -mx-16 pt-16 font-bold">
+            <a href="{{ prev_page }}" class="{{ ! prev_page ?= 'opacity-25 pointer-events-none' }}">
+                &larr; Prvious Page
+            </a>
+<div class="text-sm font-medium text-gray-500 text-center">
+            Page <span class="text-gray-900">{{ current_page }}</span> of <span class="text-gray-900">{{ total_pages }}</span>
+            <span class="hidden sm:inline block mt-1 text-xs">({{ total_items }} total posts)</span>
+        </div>
+            <a href="{{ next_page }}" class="{{ ! next_page ?= 'opacity-25 pointer-events-none' }}">
+                Next Page &rarr;
+            </a>
+        </div>
+        {{ /if }}
+        {{ /paginate }}
+
+        {{ /search:results }}
+    </div>
+</article>
+</div>

@@ -27,8 +27,8 @@ return [
 
         'default' => [
             'driver' => 'local',
-            'searchables' => 'content',
-            'fields' => ['title'],
+            'searchables' => ['collection:articles'],
+            'fields' => ['title','content','excerpt'],
         ],
 
         // 'blog' => [
