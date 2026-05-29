@@ -30,7 +30,6 @@ sections:
           type: entries
           collections:
             - articles
-          max_items: 1
           display: Display as suggested article
           mode: default
 

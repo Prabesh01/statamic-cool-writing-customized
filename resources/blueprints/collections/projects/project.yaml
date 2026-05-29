@@ -47,7 +47,6 @@ sections:
           type: entries
           collections:
             - articles
-          max_items: 1
           display: Technical Deep Dive Article
           mode: default
   sidebar:
