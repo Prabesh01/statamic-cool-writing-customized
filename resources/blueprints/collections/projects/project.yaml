@@ -21,6 +21,7 @@ sections:
           container: assets
           max_files: 1
           mode: grid
+          folder: projects
       -
         handle: content
         field:
