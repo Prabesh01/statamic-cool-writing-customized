@@ -9,3 +9,9 @@ sections:
           type: text
           localizable: false
           display: Title
+      -
+        handle: is_major
+        field:
+          type: toggle
+          display: 'Major/Featured Topic'
+          default: false
