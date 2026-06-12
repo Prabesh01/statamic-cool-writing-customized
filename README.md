@@ -6,8 +6,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://yourdomain.com
 ```
-- ./setup.sh
-- sudo chown -R $USER:$USER storage bootstrap/cache
+- `docker compose up -d`
 - Create super user: `docker compose exec cms php artisan statamic:make:user`
 
 ## Running it
