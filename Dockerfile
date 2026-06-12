@@ -1,31 +1,41 @@
-FROM php:8.4-cli
+FROM composer:2 AS composer
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --optimize-autoloader --no-dev --no-scripts
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    libzip-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libwebp-dev \
-    tini \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+FROM node:20-alpine AS node
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-# Configure and install PHP extensions (including GD with full webp/jpeg format support)
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install bcmath exif gd zip
+FROM php:8.4-cli-alpine
 
-# Pull latest Composer directly into our custom engine image
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN apk add --no-cache \
+    tini zip unzip \
+    libpng libjpeg-turbo freetype libwebp libzip \
+    libpng-dev libjpeg-turbo-dev freetype-dev libwebp-dev libzip-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install bcmath exif gd zip opcache \
+    && apk del libpng-dev libjpeg-turbo-dev freetype-dev libwebp-dev libzip-dev \
+    && rm -rf /var/cache/apk/*
 
 WORKDIR /var/www/html
 
-EXPOSE 8000
+COPY . .
+COPY --from=composer /app/vendor ./vendor
+COPY --from=node /app/public/build ./public/build
 
-ENTRYPOINT [ "tini", "--", "php" ]
-CMD ["artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Keep a seed copy separate from the volume mount path
+RUN cp -r content content.seed \
+    && rm -f bootstrap/cache/*.php \
+    && mkdir -p bootstrap/cache storage/framework/cache/data \
+                storage/framework/sessions storage/framework/views \
+                storage/logs
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# run as root so entrypoint can fix permissions, then drops to www-data via gosu
+ENTRYPOINT ["/entrypoint.sh"]
