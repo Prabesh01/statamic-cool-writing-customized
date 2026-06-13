@@ -9,3 +9,5 @@ services:
       - ./storage:/var/www/html/storage
       - ./content:/var/www/html/content
       - ./.env:/var/www/html/.env
+      - ./users:/var/www/html/users
+      - ./public/assets:/var/www/html/public/assets
