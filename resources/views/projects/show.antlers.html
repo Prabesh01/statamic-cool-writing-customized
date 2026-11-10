@@ -40,9 +40,15 @@
                      class="w-full rounded-lg mb-10 -ml-0 object-cover max-h-80" />
             {{ /featured_image }}
         {{ /if }}
-        <div class="content">
-            {{ content | widont }}
-        </div>
+<div class="content">
+    {{ content }}
+        {{ if type == "text" }}
+            {{ text | widont }}
+        {{ elseif type == "new_set" }}
+            {{ code_embed_field }}
+        {{ /if }}
+    {{ /content }}
+</div>
 <div class="flex flex-wrap items-center gap-3">
                 {{ if project_tags }}
                     <div class="flex flex-wrap gap-2">

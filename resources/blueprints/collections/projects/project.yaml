@@ -1,74 +1,119 @@
-sections:
+tabs:
   main:
-    display: Project Details
-    fields:
+    display: 'Project Details'
+    sections:
       -
-        handle: title
-        field:
-          type: text
-          display: Project Name
-          required: true
-      -
-        handle: excerpt
-        field:
-          type: textarea
-          display: Excerpt
-      -
-        handle: featured_image
-        field:
-          type: assets
-          display: Image
-          container: assets
-          max_files: 1
-          mode: grid
-          folder: projects
-      -
-        handle: content
-        field:
-          type: bard
-          display: Content
-          container: assets
-      -
-        handle: github_link
-        field:
-          type: text
-          display: GitHub Repository URL
-          input_type: url
-          placeholder: 'https://github.com/username/repo'
-      -
-        handle: live_link
-        field:
-          type: text
-          display: Live Demo URL
-          input_type: url
-          placeholder: 'https://myproject.com'
-      -
-        handle: related_article
-        field:
-          type: entries
-          collections:
-            - articles
-          display: Technical Deep Dive Article
-          mode: default
+        fields:
+          -
+            handle: title
+            field:
+              type: text
+              required: true
+              display: 'Project Name'
+              validate:
+                - required
+          -
+            handle: excerpt
+            field:
+              type: textarea
+              display: Excerpt
+          -
+            handle: featured_image
+            field:
+              type: assets
+              display: Image
+              container: assets
+              max_files: 1
+              mode: grid
+              folder: projects
+          -
+            handle: content
+            field:
+              type: bard
+              display: Content
+              container: assets
+              buttons:
+                - h2
+                - h3
+                - bold
+                - italic
+                - unorderedlist
+                - orderedlist
+                - removeformat
+                - quote
+                - anchor
+                - image
+                - table
+                - underline
+                - strikethrough
+                - superscript
+                - subscript
+                - code
+                - codeblock
+                - horizontalrule
+              remove_empty_nodes: false
+              target_blank: true
+              sets:
+                html_embed_code:
+                  display: 'HTML embed code'
+                  sets:
+                    new_set:
+                      display: 'New Set'
+                      fields:
+                        -
+                          handle: code_embed_field
+                          field:
+                            type: code
+                            display: 'Code Embed Field'
+          -
+            handle: github_link
+            field:
+              type: text
+              display: 'GitHub Repository URL'
+              input_type: url
+              placeholder: 'https://github.com/username/repo'
+          -
+            handle: live_link
+            field:
+              type: text
+              display: 'Live Demo URL'
+              input_type: url
+              placeholder: 'https://myproject.com'
+          -
+            handle: related_article
+            field:
+              type: entries
+              collections:
+                - articles
+              display: 'Technical Deep Dive Article'
   sidebar:
     display: Sidebar
-    fields:
+    sections:
       -
-        handle: date
-        field:
-          type: date
-          display: Date
-      -
-        handle: project_tags
-        field:
-          type: list
-          display: Project Tags
-      -
-        handle: project_categories
-        field:
-          type: terms
-          taxonomies:
-            - project_categories
-          display: Project Category
-          mode: select
-          max_items: 1
+        fields:
+          -
+            handle: date
+            field:
+              type: date
+              display: Date
+          -
+            handle: project_tags
+            field:
+              type: list
+              display: 'Project Tags'
+          -
+            handle: project_categories
+            field:
+              type: terms
+              taxonomies:
+                - project_categories
+              display: 'Project Category'
+              mode: select
+              max_items: 1
+          -
+            handle: slug
+            field:
+              type: slug
+              localizable: true
+              validate: 'max:200'
+title: Project
